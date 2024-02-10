@@ -11,13 +11,13 @@ library(plotly)
 ```
 
 ```{r}
-colnames(Spotify_data)
+Spotify_data <- read.csv("New_Spspotify_chart_song_ranks.csv")
 ```
 
 ```{r}
-Spotify_data <- read.csv("~/Desktop/GitHub/Sta-141C/New_Spspotify_chart_song_ranks.csv")
+colnames(Spotify_data)
 ```
-
+```
 ```{r}
 trim_data = Spotify_data %>%
   mutate(artist_names = str_trim(artist_names), WeekDate = as.Date(WeekDate)) %>% 
