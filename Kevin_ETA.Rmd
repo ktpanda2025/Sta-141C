@@ -6,6 +6,7 @@ output: html_document
 ---
 
 ```{r}
+library(plotly)
 library(tidyverse)
 ```
 
@@ -39,6 +40,9 @@ number_of_weeks_total = Spotify_charts %>%
 hist(x =number_of_weeks_total$total, main = "Number of weeks totla of all songs combined artsit has been on the charts,slightly cut down to see rest of rankings")
 ```
 
+
+
+## Looking at indivisual artist 
 ```{r}
 artist_trim_data = Spotify_charts %>%
   filter(artist_names == "Fuerza Regida")
@@ -47,5 +51,12 @@ artist_trim_data = Spotify_charts %>%
 ```{r}
 aa <- ggplot(data = artist_trim_data,aes(x= WeekDate ,y =streams,color = track_name)) + geom_line() +theme(legend.position = "none")
 ggplotly(aa)
+```
+
+
+```{r}
+combined_df = unique(merge(x= artist_trim_data ,y = Spotify_song_attributes,by.x = "uri",by.y = "uri") ,)
+
+  
 ```
 
