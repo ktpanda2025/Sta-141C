@@ -10,6 +10,12 @@ library(tidyverse)
 ```
 
 ```{r}
+Spotify_song_attributes <- read.csv("Spotify_audio_features.csv")
+colnames(Spotify_song_attributes)
+#can join on uri
+```
+
+```{r}
 Spotify_data <- read.csv("New_Spspotify_chart_song_ranks.csv")
 Spotify_charts = Spotify_data %>% 
   mutate(artist_names = str_trim(artist_names), WeekDate = as.Date(WeekDate)) 

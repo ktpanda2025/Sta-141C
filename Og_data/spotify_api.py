@@ -7,8 +7,8 @@ df = pd.read_csv('Og_data/Spotify_chart_song_ranks.csv')
 unique_track_uris = df['uri'].unique()
 sub_list =[]
 
-for i in range(0,len(unique_track_uris),5):
-    sub_list.append(unique_track_uris[i:i+5])
+for i in range(0,len(unique_track_uris),100):
+    sub_list.append(unique_track_uris[i:i+100])
 
 
 client_id =keys.client_id 
@@ -29,7 +29,12 @@ for j in sub_list:
     hhh+=1
 
 
-audio_features_df = pd.DataFrame(audio_fets)
+
+temp = []
+for i in audio_fets:
+    for j in i:
+        temp.append(j)
+
+audio_features_df = pd.DataFrame(temp)
 
 audio_features_df.to_csv('Spotify_audio_features.csv', index=False)
-print(audio_features_df.head())
