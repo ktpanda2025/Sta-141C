@@ -17,7 +17,7 @@ Spotify_data <- read.csv("New_Spspotify_chart_song_ranks.csv")
 ```{r}
 colnames(Spotify_data)
 ```
-```
+
 ```{r}
 trim_data = Spotify_data %>%
   mutate(artist_names = str_trim(artist_names), WeekDate = as.Date(WeekDate)) %>% 
