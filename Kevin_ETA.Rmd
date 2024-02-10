@@ -7,25 +7,39 @@ output: html_document
 
 ```{r}
 library(tidyverse)
-library(plotly)
 ```
 
 ```{r}
 Spotify_data <- read.csv("New_Spspotify_chart_song_ranks.csv")
+Spotify_charts = Spotify_data %>% 
+  mutate(artist_names = str_trim(artist_names), WeekDate = as.Date(WeekDate)) 
 ```
 
 ```{r}
-colnames(Spotify_data)
+colnames(Spotify_charts)
+```
+```{r}
+number_of_weeks_total_of_all_songs_charts = Spotify_charts %>% 
+  group_by(artist_names) %>% 
+  summarize(total = n())  
+hist(x =number_of_weeks_total_of_all_songs_charts$total, main = "Number of weeks totla of all songs combined artsit has been on the charts")
+
+number_of_weeks_total = Spotify_charts %>% 
+  group_by(artist_names) %>% 
+  summarize(total = n()) %>% 
+  filter(total >300)
+
+
+hist(x =number_of_weeks_total$total, main = "Number of weeks totla of all songs combined artsit has been on the charts,slightly cut down to see rest of rankings")
 ```
 
 ```{r}
-trim_data = Spotify_data %>%
-  mutate(artist_names = str_trim(artist_names), WeekDate = as.Date(WeekDate)) %>% 
-  filter(artist_names == "Bad Bunny")
+artist_trim_data = Spotify_charts %>%
+  filter(artist_names == "Fuerza Regida")
 ```
 
 ```{r}
-aa <- ggplot(data = trim_data,aes(x= WeekDate ,y =streams,color = track_name)) + geom_line() +theme(legend.position = "none")
+aa <- ggplot(data = artist_trim_data,aes(x= WeekDate ,y =streams,color = track_name)) + geom_line() +theme(legend.position = "none")
 ggplotly(aa)
 ```
 
