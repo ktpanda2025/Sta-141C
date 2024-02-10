@@ -1,0 +1,31 @@
+---
+title: "Testing_song_ETA_Kevin"
+author: "Kevin"
+date: "2024-02-10"
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(plotly)
+```
+
+```{r}
+colnames(Spotify_data)
+```
+
+```{r}
+Spotify_data <- read.csv("~/Desktop/GitHub/Sta-141C/New_Spspotify_chart_song_ranks.csv")
+```
+
+```{r}
+trim_data = Spotify_data %>%
+  mutate(artist_names = str_trim(artist_names), WeekDate = as.Date(WeekDate)) %>% 
+  filter(artist_names == "Bad Bunny")
+```
+
+```{r}
+aa <- ggplot(data = trim_data,aes(x= WeekDate ,y =streams,color = track_name)) + geom_line() +theme(legend.position = "none")
+ggplotly(aa)
+```
+
