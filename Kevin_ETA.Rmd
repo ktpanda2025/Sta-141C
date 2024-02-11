@@ -45,18 +45,61 @@ hist(x =number_of_weeks_total$total, main = "Number of weeks totla of all songs 
 ## Looking at indivisual artist 
 ```{r}
 artist_trim_data = Spotify_charts %>%
-  filter(artist_names == "Fuerza Regida")
+  filter(artist_names == "Peso Pluma")
 ```
 
 ```{r}
 aa <- ggplot(data = artist_trim_data,aes(x= WeekDate ,y =streams,color = track_name)) + geom_line() +theme(legend.position = "none")
 ggplotly(aa)
 ```
+```{r}
+total_streams = artist_trim_data %>%
+  group_by(track_name) %>%
+  mutate(total_streams = sum(streams),total_weeks = n()) %>%
+  select(track_name, total_streams,total_weeks) %>% 
+  distinct() %>%
+  arrange(track_name)
+
+total_streams
+```
 
 
 ```{r}
-combined_df = unique(merge(x= artist_trim_data ,y = Spotify_song_attributes,by.x = "uri",by.y = "uri") ,)
+combined_df = merge(x= artist_trim_data ,y = Spotify_song_attributes,by.x = "uri",by.y = "uri")
 
-  
+duplicate_rows <- duplicated(combined_df$track_name)
+
+unique_combined_df <- combined_df[!duplicate_rows, ]
+unique_combined_df <- merge(x= unique_combined_df,y =total_streams, by.x = "track_name",by.y ="track_name" )
+unique_combined_df 
+```
+```{r}
+
+```
+
+```{r}
+y_input = "energy"
+x_input = "track_name"
+size_input_1 = "total_streams"
+
+
+
+ggplot(data = unique_combined_df, aes_string(y = y_input, x = x_input, size = size_input_1, color = size_input)) +
+  geom_point(alpha = 0.7) +
+  scale_size_continuous(range = c(3, 10)) +  # Adjust size range
+  scale_color_viridis_c() +  # Add color scale
+  labs(y = y_input, x = x_input, size = size_input_1, color = size_input_1) +
+  theme_minimal()
+
+
+size_input = "total_weeks"
+ggplot(data = unique_combined_df, aes_string(y = y_input, x = x_input, size = size_input, color = size_input)) +
+  geom_point(alpha = 0.7) +
+  scale_size_continuous(range = c(3, 10)) +  # Adjust size range
+  scale_color_viridis_c() +  # Add color scale
+  labs(y = y_input, x = x_input, size = size_input, color = size_input) +
+  theme_minimal()
+```
+```{r}
 ```
 
