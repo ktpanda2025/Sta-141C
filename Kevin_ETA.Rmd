@@ -5,7 +5,7 @@ date: "2024-02-10"
 output: html_document
 ---
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(plotly)
 library(tidyverse)
 ```
@@ -40,12 +40,23 @@ number_of_weeks_total = Spotify_charts %>%
 hist(x =number_of_weeks_total$total, main = "Number of weeks totla of all songs combined artsit has been on the charts,slightly cut down to see rest of rankings")
 ```
 
+```{r}
+total_streams = Spotify_charts %>%
+  group_by(artist_names) %>%
+  mutate(total_streams = sum(streams),total_weeks = n()) %>%
+  select(artist_names, total_streams,total_weeks) %>% 
+  distinct() %>% 
+  arrange(desc(total_streams))
+total_streams 
+```
+
+
 
 
 ## Looking at indivisual artist 
 ```{r}
 artist_trim_data = Spotify_charts %>%
-  filter(artist_names == "Peso Pluma")
+  filter(artist_names == "Fuerza Regida")
 ```
 
 ```{r}
@@ -59,9 +70,13 @@ total_streams = artist_trim_data %>%
   select(track_name, total_streams,total_weeks) %>% 
   distinct() %>%
   arrange(track_name)
-
-total_streams
 ```
+
+
+```{r}
+
+```
+
 
 
 ```{r}
@@ -71,14 +86,14 @@ duplicate_rows <- duplicated(combined_df$track_name)
 
 unique_combined_df <- combined_df[!duplicate_rows, ]
 unique_combined_df <- merge(x= unique_combined_df,y =total_streams, by.x = "track_name",by.y ="track_name" )
-unique_combined_df 
+head(unique_combined_df )
 ```
 ```{r}
 
 ```
 
 ```{r}
-y_input = "energy"
+y_input = "speechiness"
 x_input = "track_name"
 size_input_1 = "total_streams"
 
@@ -91,14 +106,6 @@ ggplot(data = unique_combined_df, aes_string(y = y_input, x = x_input, size = si
   labs(y = y_input, x = x_input, size = size_input_1, color = size_input_1) +
   theme_minimal()
 
-
-size_input = "total_weeks"
-ggplot(data = unique_combined_df, aes_string(y = y_input, x = x_input, size = size_input, color = size_input)) +
-  geom_point(alpha = 0.7) +
-  scale_size_continuous(range = c(3, 10)) +  # Adjust size range
-  scale_color_viridis_c() +  # Add color scale
-  labs(y = y_input, x = x_input, size = size_input, color = size_input) +
-  theme_minimal()
 ```
 ```{r}
 ```
