@@ -57,7 +57,7 @@ total_streams
 ## Looking at indivisual artist 
 ```{r}
 artist_trim_data = Spotify_charts %>%
-  filter(artist_names == "Taylor Swift")
+  filter(artist_names == "Drake")
 ```
 
 ```{r}
@@ -81,7 +81,7 @@ duplicate_rows <- duplicated(combined_df$track_name)
 
 unique_combined_df <- combined_df[!duplicate_rows, ]
 unique_combined_df <- merge(x= unique_combined_df,y =total_streams, by.x = "track_name",by.y ="track_name" )
-head(unique_combined_df )
+unique_combined_df
 ```
 
 
@@ -168,5 +168,8 @@ aaaa <- takeALookAround(smaller_data,"total_weeks",length(colnames(smaller_data)
 ```{r}
 aaaa %>% 
   arrange(desc(Y_accuracy))
+```
+```{r}
+Drake_Spotify_Data <- read_csv("Drake Spotify Data.csv")
 ```
 
