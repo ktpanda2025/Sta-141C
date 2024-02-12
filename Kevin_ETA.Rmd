@@ -8,6 +8,7 @@ output: html_document
 ```{r message=FALSE, warning=FALSE}
 library(plotly)
 library(tidyverse)
+library(gtools)
 ```
 
 ```{r}
@@ -56,7 +57,7 @@ total_streams
 ## Looking at indivisual artist 
 ```{r}
 artist_trim_data = Spotify_charts %>%
-  filter(artist_names == "Fuerza Regida")
+  filter(artist_names == "Taylor Swift")
 ```
 
 ```{r}
@@ -74,12 +75,6 @@ total_streams = artist_trim_data %>%
 
 
 ```{r}
-
-```
-
-
-
-```{r}
 combined_df = merge(x= artist_trim_data ,y = Spotify_song_attributes,by.x = "uri",by.y = "uri")
 
 duplicate_rows <- duplicated(combined_df$track_name)
@@ -88,9 +83,7 @@ unique_combined_df <- combined_df[!duplicate_rows, ]
 unique_combined_df <- merge(x= unique_combined_df,y =total_streams, by.x = "track_name",by.y ="track_name" )
 head(unique_combined_df )
 ```
-```{r}
 
-```
 
 ```{r}
 y_input = "speechiness"
@@ -107,6 +100,73 @@ ggplot(data = unique_combined_df, aes_string(y = y_input, x = x_input, size = si
   theme_minimal()
 
 ```
+
 ```{r}
+smaller_data = unique_combined_df %>% 
+  select(tempo,valence,liveness,instrumentalness,acousticness,speechiness,loudness,energy,danceability,total_weeks)
+smaller_data 
+```
+
+```{r}
+
+ft_sets <- function(data, yName, maxFeatureSetSize) {
+  row_data_combo <- list() # we should probaly delete this before turning in 
+  col_names <- colnames(data)# get all the colum names 
+  x_variables <- col_names[col_names != yName]# we are left with all the names not including sname of yname 
+  
+  for (i in 1:maxFeatureSetSize) {
+    bb <- combinations(n = length(x_variables), r = i, v = x_variables)# this give us all the combonation of of size i for the columanes, but its in a matrix data 
+    
+    for (j in 1:nrow(bb)) {
+      row_data_combo <- append(row_data_combo, list(bb[j, ]))# this take the matrix form and basicly takes each row of that matrix and adds to list row_data_combo
+    }
+  }
+  
+  return(row_data_combo)
+}
+
+```
+
+
+```{r}
+takeALookAround <- function(data, yName, maxFeatureSetSize) {
+  row_combos <- ft_sets(data, yName, maxFeatureSetSize)
+  output_data_frame <- data.frame(name = character(),
+                                  Y_accuracy = numeric(),
+                                  Y_S_accuracy = numeric(),
+                                  S_accuracy = numeric(),
+                                  stringsAsFactors = FALSE)
+  
+  for (column_indices in row_combos) {
+    temp <- data[, c(column_indices, yName)]  # Include only selected columns and the yName
+    
+    if (is.numeric(data[, yName])) {
+      model <- lm(paste(yName, "~ ."), data = temp)  # Linear regression model
+      
+      Y_accuracy <- summary(model)$adj.r.squared
+    } else {
+      model <- glm(paste(yName, "~ ."), data = temp, family = binomial)  # Logistic regression model
+      
+      Y_accuracy <- summary(model)$null.deviance
+    }
+    
+    name <- paste(colnames(temp)[-which(colnames(temp) == yName)], collapse = "+")
+    output_data_frame <- rbind(output_data_frame, 
+                               data.frame(name = name,
+                                          Y_accuracy = Y_accuracy,
+                                          stringsAsFactors = FALSE))
+  }
+  
+  return(output_data_frame)
+}
+```
+
+```{r}
+aaaa <- takeALookAround(smaller_data,"total_weeks",length(colnames(smaller_data))-1)
+```
+
+```{r}
+aaaa %>% 
+  arrange(desc(Y_accuracy))
 ```
 
