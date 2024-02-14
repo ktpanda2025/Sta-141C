@@ -81,7 +81,7 @@ duplicate_rows <- duplicated(combined_df$track_name)
 
 unique_combined_df <- combined_df[!duplicate_rows, ]
 unique_combined_df <- merge(x= unique_combined_df,y =total_streams, by.x = "track_name",by.y ="track_name" )
-unique_combined_df
+head(unique_combined_df)
 ```
 
 
