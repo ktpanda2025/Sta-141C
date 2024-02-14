@@ -1,0 +1,39 @@
+---
+title: "Drake analytics"
+author: "Kevin"
+date: "2024-02-14"
+output: html_document
+---
+```{r}
+library(tidyverse)
+Drake_Spotify_Data_2020 <- read_csv("Drake_Spotify_Data_2020.csv")
+
+Drake_Spotify_charts = read.csv("New_Spspotify_chart_song_ranks.csv") %>% 
+  mutate(artist_names = str_trim(artist_names), WeekDate = as.Date(WeekDate)) %>% 
+   filter(artist_names == "Drake")
+
+
+```
+
+```{r}
+duplicate_rows <- duplicated(Drake_Spotify_charts$track_name)
+
+unique_combined_df <- Drake_Spotify_charts[!duplicate_rows, ]
+unique_combined_df
+```
+
+Cant tell if the kaggle data set only contains songs drake did by him self
+
+
+```{r}
+merge(x=unique_combined_df, y =Drake_Spotify_Data_2020,by.x = "uri",by.y = "track_uri" )
+```
+
+```{r}
+Spotify_chart_song_ranks <- read_csv("Og_data/Spotify_chart_song_ranks.csv", col_types = cols())
+
+Spotify_chart_song_ranks 
+
+```
+
+
