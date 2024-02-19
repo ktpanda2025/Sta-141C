@@ -1,30 +1,26 @@
----
-title: "Untitled"
-author: "Kevin"
-date: "2024-02-14"
-output: html_document
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r}
+kag <- read.csv("Drake_Spotify_Data.csv")
+spot <- Spotify_chart_song_ranks <- read.csv("New_Spspotify_chart_song_ranks.csv")
+spot_uri_drake = spot[spot["artist_names"]=="Drake",][,"uri"]
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+kagg = data.frame(unique(kag['track_uri']))
+spott = data.frame(unique(spot_uri_drake))
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r}
+print(merge(x=spott,y=kagg,
+by.x ="unique.spot_uri_drake.",
+by.y ='track_uri' , 
+join = "inner"))
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+merged_data <- merge(x = spott, y = kagg,
+                    by.x = "unique.spot_uri_drake.",
+                    by.y = "track_uri",
+                    all = FALSE)  # Inner join
+print(merged_data)
+```
+
