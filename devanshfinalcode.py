@@ -132,6 +132,7 @@ print(classification_report(y_test, predict_test_rf))
 test_error_rf = mean_squared_error(y_test, predict_test_rf)
 print("This is the MSE for Random Forest" , test_error_rf)
 
+
 #ROC for Random Forest
 fpr_rf, tpr_rf, _ = roc_curve(y_test, prob_rf)
 roc_auc_rf = auc(fpr_rf, tpr_rf)
@@ -182,4 +183,24 @@ plt.legend(title='Charted', labels=['Not Charted', 'Charted'])
 plt.show()
 
 
+fpr_rf, tpr_rf, _ = roc_curve(y_test, prob_rf)
+roc_auc_rf = auc(fpr_rf, tpr_rf)
 
+fpr_lasso, tpr_lasso, _ = roc_curve(y_test, lasso_predict)
+roc_auc_lasso = auc(fpr_lasso, tpr_lasso)
+
+plt.figure(figsize=(10, 8))
+
+plt.plot(fpr_rf, tpr_rf, color='darkorange', lw=2, label='Random Forest (area = %0.2f)' % roc_auc_rf)
+plt.plot(fpr_lasso, tpr_lasso, color='green', lw=2, linestyle='--', label='Lasso (area = %0.2f)' % roc_auc_lasso)
+
+plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle=':')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC)')
+plt.legend(loc="lower right")
+plt.show()
+
+#Link to github("https://github.com/ktpanda2025/STA_141C_FINAL_PAPER")
