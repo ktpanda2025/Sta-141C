@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression, LassoCV
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc, mean_squared_error
 from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 import warnings
@@ -62,18 +62,26 @@ new_data.drop(columns='WeekDate', inplace=True)
 new_data.rename(columns={'track_name_x': 'track_name'}, inplace=True)
 
 
+new_data.columns
+
+np.random.seed(45)
 #For an initial EDA we are checking the correlation between each col of the data
 correlation_matrix_full = new_data.corr(numeric_only=True)
 print(correlation_matrix_full)
 
 #We are now focusing on a few features we want to check how they affect the success rate
-features_to_compare = ['danceability', 'energy', 'loudness', 'valence', 'tempo', 'acousticness', 'speechiness', 'instrumentalness']
+features_to_compare = ['danceability', 'energy', 'loudness', 'valence', 'tempo', 'acousticness', 'speechiness', 'instrumentalness','liveness']
 
 X = new_data[features_to_compare]
 y = new_data['on_chart'] #Target Binary Variable
 
-#Splitting the data at 80% - 20% ratio
+#Splitting the data at 80% - 20% ratio split
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+test_data_combined = X_test.copy()
+test_data_combined['on_chart'] = y_test
+mean_on_chart = test_data_combined['on_chart'].mean()
+print("Mean of 'on_chart' in the test dataset:", mean_on_chart)
+
 
 #We now scale the data using the StandardScaler
 scaler = StandardScaler()
@@ -88,6 +96,9 @@ prob_logistic = logistic.predict_proba(X_test_scaled)[:,1]
 accuracy = accuracy_score(y_test, predict_test_logistic)
 print(f"Logistic Regression Test Accuracy: {accuracy}")
 print(classification_report(y_test, predict_test_logistic))
+test_error_logistic = mean_squared_error(y_test, predict_test_logistic)
+print("This is the MSE for Logistic" , test_error_logistic)
+
 
 #Performing ROC for Logistic Regression
 fpr_lr, tpr_lr, _ = roc_curve(y_test, prob_logistic)
@@ -118,6 +129,8 @@ prob_rf = rf.predict_proba(X_test_scaled)[:,1]
 accuracy = accuracy_score(y_test, predict_test_rf)
 print(f"Random Forest Test Accuracy: {accuracy}")
 print(classification_report(y_test, predict_test_rf))
+test_error_rf = mean_squared_error(y_test, predict_test_rf)
+print("This is the MSE for Random Forest" , test_error_rf)
 
 #ROC for Random Forest
 fpr_rf, tpr_rf, _ = roc_curve(y_test, prob_rf)
@@ -142,6 +155,9 @@ plt.show()
 #Perform Lasso regression to see whic hcef results in 0
 lasso = LassoCV(cv=5).fit(X_train_scaled, y_train)
 lasso_coefficients = pd.Series(lasso.coef_, index=features_to_compare)
+lasso_predict = lasso.predict(X_test_scaled)
+test_mse_lasso = mean_squared_error(y_test, lasso_predict)
+print("Test MSE for Lasso:", test_mse_lasso)
 print("Lasso Coefficients:")
 print(lasso_coefficients)
 
@@ -152,6 +168,8 @@ pred_test_qda = qda.predict(X_test_scaled)
 accuracy = accuracy_score(y_test, pred_test_qda)
 print(f"QDA Test Accuracy: {accuracy}")
 print(classification_report(y_test, pred_test_qda))
+test_error_qda = mean_squared_error(y_test, pred_test_qda)
+print("This is the MSE for QDA" , test_error_qda)
 
 
 
@@ -162,3 +180,6 @@ plt.ylabel('Average Value')
 plt.xticks(rotation=45)
 plt.legend(title='Charted', labels=['Not Charted', 'Charted'])
 plt.show()
+
+
+
