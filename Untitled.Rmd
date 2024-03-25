@@ -1,0 +1,53 @@
+```{r}
+Spotify_data <- read.csv("New_Spspotify_chart_song_ranks.csv")
+kaggle <- read.csv("Drake_Spotify_Data.csv")
+library(tidyverse)
+```
+
+```{r}
+# how many artist per song
+artist_per_song_count = Spotify_data %>% 
+  distinct(uri,artist_names,.keep_all = TRUE) %>% 
+  group_by(uri) %>% 
+  tally() %>% 
+  arrange(desc(n))
+head(artist_per_song_count)
+```
+
+```{r}
+drake_chart_spotify = Spotify_data %>% 
+  filter(artist_names == "Drake") %>% 
+  distinct(uri,.keep_all = TRUE) %>% 
+  arrange(WeekDate)
+
+drake_chart_spotify
+```
+## 104 songs on the charts on spotify
+
+```{r}
+kaggle_2020 = kaggle %>% 
+   filter(album_release_year >= 2020)
+```
+
+```{r}
+inner_join_result <- inner_join(kaggle_2020,drake_chart_spotify, by = c( "track_uri"="uri"))
+inner_join_result
+```
+only 63 of the 104 songs found
+```{r}
+left_join_data <- left_join(kaggle_2020,drake_chart_spotify, by = c( "track_uri"="uri"))
+left_join_data
+```
+```{r}
+aaa <- left_join_data %>% 
+  select(tempo,valence,liveness,instrumentalness,
+         acousticness,speechiness,loudness,energy,danceability,WeekDate,track_name.x,track_name.y) %>% 
+  mutate(on_chart = case_when(
+    is.na(WeekDate) ~ 0,
+    TRUE ~ 1
+  )) %>% 
+  arrange(WeekDate)
+
+aaa
+```
+
